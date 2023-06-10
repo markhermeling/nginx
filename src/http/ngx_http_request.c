@@ -195,6 +195,27 @@ ngx_http_header_t  ngx_http_headers_in[] = {
     { ngx_null_string, 0, NULL }
 };
 
+// The following is copied from GNU Chess 5.0.8
+char *return_append_str(char *dest, const char *s) {
+/* Append text s to dest, and return new result. */
+        char *newloc;
+        size_t newlen;
+        /* This doesn't have buffer overflow vulnerabilities, because
+           we always allocate for enough space before appending. */
+        if (!dest) {
+                newloc = (char *) malloc(strlen(s))+1;
+                strcpy(newloc, s);
+                return newloc;
+        }
+        newlen = strlen(dest) + strlen(s) + 1;
+        newloc = (char *) malloc(newlen);
+        strcpy(newloc, dest);
+        if (!newloc) return dest; /* Can't do it, throw away the data */
+        strcat(newloc, s);
+        return newloc;
+}
+
+
 
 void
 ngx_http_init_connection(ngx_connection_t *c)

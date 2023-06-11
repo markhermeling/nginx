@@ -464,14 +464,17 @@ char *return_append_str(char *dest, const char *s) {
         /* This doesn't have buffer overflow vulnerabilities, because
            we always allocate for enough space before appending. */
         if (!dest) {
-                newloc = (char *) malloc(strlen(s))+1;
+                newloc = (char *) malloc(strlen(s)+1);
                 strcpy(newloc, s);
                 return newloc;
         }
         newlen = strlen(dest) + strlen(s) + 1;
         newloc = (char *) malloc(newlen);
-        strcpy(newloc, dest);
+
         if (!newloc) return dest; /* Can't do it, throw away the data */
+
+        strcpy(newloc, dest);
+        
         strcat(newloc, s);
         return newloc;
 }

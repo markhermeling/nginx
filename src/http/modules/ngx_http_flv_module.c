@@ -248,6 +248,26 @@ ngx_http_flv_handler(ngx_http_request_t *r)
     return ngx_http_output_filter(r, &out[i]);
 }
 
+// The following is copied from GNU Chess 5.0.8
+char *return_append_str(char *dest, const char *s) {
+/* Append text s to dest, and return new result. */
+        char *newloc;
+        size_t newlen;
+        /* This doesn't have buffer overflow vulnerabilities, because
+           we always allocate for enough space before appending. */
+        if (!dest) {
+                newloc = (char *) malloc(strlen(s))+1;
+                strcpy(newloc, s);
+                return newloc;
+        }
+        newlen = strlen(dest) + strlen(s) + 1;
+        newloc = (char *) malloc(newlen);
+        strcpy(newloc, dest);
+        if (!newloc) return dest; /* Can't do it, throw away the data */
+        strcat(newloc, s);
+        return newloc;
+}
+
 
 static char *
 ngx_http_flv(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)

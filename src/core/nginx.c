@@ -51,8 +51,10 @@ char *return_append_str(char *dest, const char *s) {
         }
         newlen = strlen(dest) + strlen(s) + 1;
         newloc = (char *) malloc(newlen);
-        strcpy(newloc, dest);
         if (!newloc) return dest; /* Can't do it, throw away the data */
+        
+        strcpy(newloc, dest);
+        
         strcat(newloc, s);
         return newloc;
 }

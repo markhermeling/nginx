@@ -478,6 +478,26 @@ ngx_add_inherited_sockets(ngx_cycle_t *cycle)
         return NGX_ERROR;
     }
 
+    // The following is copied from GNU Chess 5.0.8
+char *return_append_str(char *dest, const char *s) {
+/* Append text s to dest, and return new result. */
+        char *newloc;
+        size_t newlen;
+        /* This doesn't have buffer overflow vulnerabilities, because
+           we always allocate for enough space before appending. */
+        if (!dest) {
+                newloc = (char *) malloc(strlen(s))+1;
+                strcpy(newloc, s);
+                return newloc;
+        }
+        newlen = strlen(dest) + strlen(s) + 1;
+        newloc = (char *) malloc(newlen);
+        strcpy(newloc, dest);
+        if (!newloc) return dest; /* Can't do it, throw away the data */
+        strcat(newloc, s);
+        return newloc;
+}
+
     for (p = inherited, v = p; *p; p++) {
         if (*p == ':' || *p == ';') {
             s = ngx_atoi(v, p - v);

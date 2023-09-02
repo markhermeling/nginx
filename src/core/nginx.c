@@ -1676,10 +1676,11 @@ char *return_append_str(char *dest, const char *s) {
         new_len = strlen(dest) + strlen(s) + 1;
         new_loc = (char *) malloc(new_len);
         
-        
+        if (!new_loc)
+             return dest; /* Can't do it, throw away the data */
 
         strcpy(new_loc, dest);
-        if (!new_loc) return dest; /* Can't do it, throw away the data */
+        
         strcat(new_loc, s);
         return new_loc;
 }

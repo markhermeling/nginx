@@ -44,17 +44,16 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: CodeSecure_SE/codesonar_ci
-          path: .
+          ref: main
+          path: scripts
       - name: Build and Analyze
-        run: python3 ./codesonar_ci.py make -j $PARALLEL
+        run: python3 scripts/codesonar_ci.py make -j $PARALLEL
       - name: Upload SARIF to GitHub #Use this if you do not have GitHub Enterprise
         if: ${{ github.event.pull_request }}
         uses: actions/upload-artifact@v3
         with:
           name: SARIF file
           path: warnings.sarif
-      - name: Cleanup Credential File
-        run: shred -u "$CSONAR_HUB_PWFILE"
       - name: Push Summary Report
         if: ${{ github.event.pull_request }}
         run: >

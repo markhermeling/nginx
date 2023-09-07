@@ -31,6 +31,7 @@ jobs:
       CSO_GITHUB: /opt/codesonar-github 
       GITHUB_REPO_URL: "http://github.com/markhermeling/nginx"    # the github.repositoryUrl is not an http-link.
       TARGET: ${{ github.base_ref }}
+      IS_PR: ${{ github.event_name == \'pull_request\' }}
     steps:
       - name: Set parallelism
         run:  echo "PARALLEL=`nproc`" >> $GITHUB_ENV

@@ -41,7 +41,7 @@ jobs:
       - name : configure
         run: auto/configure --with-http_ssl_module
       - name: Checkout CodeSonar CI-Script
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: CodeSecure-SE/codesonar_ci/
           ref: main

@@ -43,7 +43,7 @@ jobs:
       - name: Checkout CodeSonar CI-Script
         uses: actions/checkout@v2
         with:
-          repository: CodeSecure_SE/codesonar_ci
+          repository: CodeSecure-SE/codesonar_ci/
           ref: main
           path: scripts
       - name: Build and Analyze

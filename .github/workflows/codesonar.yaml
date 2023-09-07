@@ -58,7 +58,7 @@ jobs:
       - name: Push Summary Report
         if: ${{ github.event.pull_request }}
         run: >
-            cat summary.md
+            cat warnings.md
             | "$CSPYTHON" "$CSO_GITHUB/push_github_pr_comment.py"
             --api-url $GITHUB_API_URL --cafile "$GITHUB_CAFILE"
             ${{ github.repository }}

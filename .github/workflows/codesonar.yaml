@@ -30,7 +30,7 @@ jobs:
       CSONAR_CSHOME: /opt/codesonar
       CSO_GITHUB: /opt/codesonar-github 
       GITHUB_REPO_URL: "http://github.com/markhermeling/nginx"    # the github.repositoryUrl is not an http-link.
-      TARGET: None
+      TARGET: ${{ github.base_ref }}
     steps:
       - name: Set parallelism
         run:  echo "PARALLEL=`nproc`" >> $GITHUB_ENV
@@ -47,7 +47,7 @@ jobs:
           path: .
       - name: Build and Analyze
         run: python3 ./codesonar_ci.py make -j $PARALLEL
-       - name: Upload SARIF to GitHub #Use this if you do not have GitHub Enterprise
+      - name: Upload SARIF to GitHub #Use this if you do not have GitHub Enterprise
         if: ${{ github.event.pull_request }}
         uses: actions/upload-artifact@v3
         with:

@@ -58,13 +58,10 @@ jobs:
       - name: Push Summary Report
         if: ${{ github.event.pull_request }}
         run: >
-            "$CSPYTHON" "$CSO_GITHUB/sarif_summary.py"
-            warnings.sarif
-            "$CSONAR_HUB_URL"
-            "$ROOT_PROJECT_NAME"
+            cat summary.md
             | "$CSPYTHON" "$CSO_GITHUB/push_github_pr_comment.py"
             --api-url $GITHUB_API_URL --cafile "$GITHUB_CAFILE"
             ${{ github.repository }}
-            $PULL_REQUEST_ID
+            $PULL_REQUEST_NUMBER
             GITHUB_TOKEN
             

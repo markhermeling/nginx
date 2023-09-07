@@ -57,11 +57,7 @@ jobs:
           path: warnings.sarif
       - name: Push Summary Report
         if: ${{ github.event.pull_request }}
-        run: >
-            cat warnings.md
-            | "$CSPYTHON" "$CSO_GITHUB/push_github_pr_comment.py"
-            --api-url $GITHUB_API_URL --cafile "$GITHUB_CAFILE"
-            ${{ github.repository }}
-            $PULL_REQUEST_NUMBER
-            GITHUB_TOKEN
+        uses: thollander/actions-comment-pull-request@v2
+        with: 
+          filePath: warnings.md
             

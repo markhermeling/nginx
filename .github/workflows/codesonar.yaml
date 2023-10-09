@@ -29,7 +29,6 @@ jobs:
       CSONAR_HUB_PASSWORD: "${{ secrets.CSONAR_HUB_PASS }}"
       CSONAR_CSHOME: /opt/codesonar
       COMMIT_HASH: ${{ github.sha }}
-#      CSO_GITHUB: /opt/codesonar-github 
       REPO_URL: "http://github.com/CodeSecure-SE/nginx"    # the github.repositoryUrl is not an http-link.
       TARGET: ${{ github.base_ref }}
       IS_PR: ${{ github.event_name }}

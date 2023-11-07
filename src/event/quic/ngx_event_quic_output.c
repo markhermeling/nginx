@@ -35,6 +35,15 @@
 #define NGX_QUIC_SOCKET_RETRY_DELAY      10 /* ms, for NGX_AGAIN on write */
 
 
+#define ngx_quic_log_packet(log, pkt)                                         \
+    ngx_log_debug6(NGX_LOG_DEBUG_EVENT, log, 0,                               \
+                   "quic packet tx %s bytes:%ui need_ack:%d"                  \
+                   " number:%L encoded nl:%d trunc:0x%xD",                    \
+                   ngx_quic_level_name((pkt)->level), (pkt)->payload.len,     \
+                   (pkt)->need_ack, (pkt)->number, (pkt)->num_len,            \
+                    (pkt)->trunc);
+
+
 static ngx_int_t ngx_quic_create_datagrams(ngx_connection_t *c);
 static void ngx_quic_commit_send(ngx_connection_t *c, ngx_quic_send_ctx_t *ctx);
 static void ngx_quic_revert_send(ngx_connection_t *c, ngx_quic_send_ctx_t *ctx,
@@ -519,6 +528,21 @@ ngx_quic_output_packet(ngx_connection_t *c, ngx_quic_send_ctx_t *ctx,
 
     qc = ngx_quic_get_connection(c);
 
+    if (!ngx_quic_keys_available(qc->keys, ctx->level, 1)) {
+        ngx_log_error(NGX_LOG_ALERT, c->log, 0, "quic %s write keys discarded",
+                      ngx_quic_level_name(ctx->level));
+
+        while (!ngx_queue_empty(&ctx->frames)) {
+            q = ngx_queue_head(&ctx->frames);
+            ngx_queue_remove(q);
+
+            f = ngx_queue_data(q, ngx_quic_frame_t, queue);
+            ngx_quic_free_frame(c, f);
+        }
+
+        return 0;
+    }
+
     ngx_quic_init_packet(c, ctx, &pkt, qc->path);
 
     min_payload = ngx_quic_payload_size(&pkt, min);
@@ -563,6 +587,11 @@ ngx_quic_output_packet(ngx_connection_t *c, ngx_quic_send_ctx_t *ctx,
             pkt.need_ack = 1;
         }
 
+        f->pnum = ctx->pnum;
+        f->first = now;
+        f->last = now;
+        f->plen = 0;
+
         ngx_quic_log_frame(c->log, f, 1);
 
         flen = ngx_quic_create_frame(p, f);
@@ -572,11 +601,6 @@ ngx_quic_output_packet(ngx_connection_t *c, ngx_quic_send_ctx_t *ctx,
 
         len += flen;
         p += flen;
-
-        f->pnum = ctx->pnum;
-        f->first = now;
-        f->last = now;
-        f->plen = 0;
 
         nframes++;
     }
@@ -595,11 +619,7 @@ ngx_quic_output_packet(ngx_connection_t *c, ngx_quic_send_ctx_t *ctx,
 
     res.data = data;
 
-    ngx_log_debug6(NGX_LOG_DEBUG_EVENT, c->log, 0,
-                   "quic packet tx %s bytes:%ui"
-                   " need_ack:%d number:%L encoded nl:%d trunc:0x%xD",
-                   ngx_quic_level_name(ctx->level), pkt.payload.len,
-                   pkt.need_ack, pkt.number, pkt.num_len, pkt.trunc);
+    ngx_quic_log_packet(c->log, &pkt);
 
     if (ngx_quic_encrypt(&pkt, &res) != NGX_OK) {
         return NGX_ERROR;
@@ -884,12 +904,12 @@ ngx_quic_send_early_cc(ngx_connection_t *c, ngx_quic_header_t *inpkt,
     frame.u.close.reason.data = (u_char *) reason;
     frame.u.close.reason.len = ngx_strlen(reason);
 
+    ngx_quic_log_frame(c->log, &frame, 1);
+
     len = ngx_quic_create_frame(NULL, &frame);
     if (len > NGX_QUIC_MAX_UDP_PAYLOAD_SIZE) {
         return NGX_ERROR;
     }
-
-    ngx_quic_log_frame(c->log, &frame, 1);
 
     len = ngx_quic_create_frame(src, &frame);
     if (len == -1) {
@@ -925,13 +945,19 @@ ngx_quic_send_early_cc(ngx_connection_t *c, ngx_quic_header_t *inpkt,
 
     res.data = dst;
 
+    ngx_quic_log_packet(c->log, &pkt);
+
     if (ngx_quic_encrypt(&pkt, &res) != NGX_OK) {
+        ngx_quic_keys_cleanup(pkt.keys);
         return NGX_ERROR;
     }
 
     if (ngx_quic_send(c, res.data, res.len, c->sockaddr, c->socklen) < 0) {
+        ngx_quic_keys_cleanup(pkt.keys);
         return NGX_ERROR;
     }
+
+    ngx_quic_keys_cleanup(pkt.keys);
 
     return NGX_DONE;
 }
@@ -1179,12 +1205,16 @@ ngx_quic_frame_sendto(ngx_connection_t *c, ngx_quic_frame_t *frame,
     pad = 4 - pkt.num_len;
     min_payload = ngx_max(min_payload, pad);
 
+#if (NGX_DEBUG)
+    frame->pnum = pkt.number;
+#endif
+
+    ngx_quic_log_frame(c->log, frame, 1);
+
     len = ngx_quic_create_frame(NULL, frame);
     if (len > NGX_QUIC_MAX_UDP_PAYLOAD_SIZE) {
         return NGX_ERROR;
     }
-
-    ngx_quic_log_frame(c->log, frame, 1);
 
     len = ngx_quic_create_frame(src, frame);
     if (len == -1) {
@@ -1200,6 +1230,8 @@ ngx_quic_frame_sendto(ngx_connection_t *c, ngx_quic_frame_t *frame,
     pkt.payload.len = len;
 
     res.data = dst;
+
+    ngx_quic_log_packet(c->log, &pkt);
 
     if (ngx_quic_encrypt(&pkt, &res) != NGX_OK) {
         return NGX_ERROR;

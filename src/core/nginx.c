@@ -39,6 +39,7 @@ static ngx_conf_enum_t  ngx_debug_points[] = {
 };
 
 
+
 static ngx_command_t  ngx_core_commands[] = {
 
     { ngx_string("daemon"),

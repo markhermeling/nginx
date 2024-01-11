@@ -20,7 +20,7 @@
     "-hubuser", "${config:codesonar.hubUser}",
     "-auth", "certificate",
     "-name", "${input:codesonarAnalysisName}",
-    "-conf-file", "codesonar-release.conf",
+    "-conf-file", "conf/codesonar-release.conf",
     "-project", "OSS-Projects/NGINX-GitHub/developers/${config:codesonar.hubUser}",
     "${config:codesonar.hubAddress}",
     "make", "-j", "$(nproc)"

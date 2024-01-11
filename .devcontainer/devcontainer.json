@@ -5,7 +5,14 @@
 	"image": "canuckmh/nginx-cso-builder:8.0p0",
 	"mounts" : [
 	"source=${localEnv:HOME}/.csurf,target=/home/user/.csurf,type=bind"
-	]
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"CodeSecure.vscode-codesonar"
+			]
+		}
+	}
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 	

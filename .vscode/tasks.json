@@ -16,7 +16,7 @@
     "args": [
     "analyze",
     "-remote-archive", "\"/saas/*\"",
-    "nginx",
+    "objs/nginx",
     "-hubuser", "${config:codesonar.hubUser}",
     "-auth", "certificate",
     "-name", "${input:codesonarAnalysisName}",

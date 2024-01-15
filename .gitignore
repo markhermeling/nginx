@@ -1,2 +1,2 @@
-feature_MyFeatureBranch-2023.09.02-12.38.sarif
-.github/workflows/codesonar.yaml
+/objs/**
+Makefile

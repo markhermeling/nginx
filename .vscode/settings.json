@@ -1,6 +1,0 @@
-{
-    "codesonar.project": "/OSS-Projects/NGINX-GitHub/feature/MyFeatureBranch",
-    "codesonar.hubAddress": "https://partnerdemo.codesonar.com",
-    "codesonar.authenticationMode": "password",
-    "codesonar.hubUser": "mhermeling"
-}

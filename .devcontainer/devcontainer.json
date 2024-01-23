@@ -9,7 +9,11 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"CodeSecure.vscode-codesonar"
+				"CodeSecure.vscode-codesonar",
+				"MS-SarifVSCode.sarif-viewer",
+				"ms-vscode.cpptools",
+				"GitHub.vscode-pull-request-github",
+				"github.vscode-github-actions"
 			]
 		}
 	}

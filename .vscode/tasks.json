@@ -12,7 +12,7 @@
     {
     "type": "shell",
     "label": "C/C++: CodeSonar analyze",
-    "command": "${config:codesonar.installDir}${pathSeparator}codesonar${pathSeparator}bin${pathSeparator}codesonar",
+    "command": "[ ! -e Makefile ] && auto/configure ; ${config:codesonar.installDir}${pathSeparator}codesonar${pathSeparator}bin${pathSeparator}codesonar",
     "args": [
     "analyze",
     "-remote-archive", "\"/saas/*\"",

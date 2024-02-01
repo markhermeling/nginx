@@ -19,7 +19,9 @@
     "group": "build",
     "detail": "builder: make",
     "presentation": {
-        "showReuseMessage": false
+        "showReuseMessage": false,
+        "panel": "new"
+
     }
     }
     ]

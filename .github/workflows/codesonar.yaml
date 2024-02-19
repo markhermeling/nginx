@@ -12,10 +12,10 @@ jobs:
     permissions: write-all
     runs-on: self-hosted
     container:
-      image: codesecurese/nginx-cso-builder:8.0p0
+      image: ghcr.io/codesecure-se/nginx-cso-builder:8.1b0
       credentials:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_token  }}
     env:
       CAFILE: ".github/github.cert.pem" 
       TOKEN: "${{ secrets.GITHUB_TOKEN }}"
@@ -24,10 +24,11 @@ jobs:
       ROOT_TREE: "OSS-Projects/NGINX-GitHub" 
       PROJECT_NAME: "nginx"
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
-      CSONAR_HUB_URL: "https://partnerdemo.codesonar.com" 
+      CSONAR_HUB_URL: "https://duck.dyndns.org:7340" 
       CSONAR_HUB_USER: "${{ secrets.CSONAR_HUB_USER }}"
       CSONAR_HUB_PASSWORD: "${{ secrets.CSONAR_HUB_PASS }}"
       CSONAR_CSHOME: /opt/codesonar
+      CS_USER_HOME: /__w/nginx/nginx
       COMMIT_HASH: ${{ github.sha }}
       REPO_URL: "http://github.com/CodeSecure-SE/nginx"    # the github.repositoryUrl is not an http-link.
       TARGET: ${{ github.base_ref }}

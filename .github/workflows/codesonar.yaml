@@ -47,6 +47,8 @@ jobs:
           repository: CodeSecure-SE/codesonar_ci
           ref: main
           path: scripts
+      - name: Check cert
+        run: cat .csurf/codesonar/trusted_certs.pem
       - name: Build and Analyze
         run: python3 scripts/build_and_analyze.py conf/codesonar-release.conf make -j $PARALLEL
       - name: Upload SARIF to GitHub #Use this if you do not have GitHub Enterprise

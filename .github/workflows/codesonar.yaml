@@ -24,7 +24,7 @@ jobs:
       ROOT_TREE: "OSS-Projects/NGINX-GitHub" 
       PROJECT_NAME: "nginx"
       BRANCH_NAME: ${{ github.head_ref || github.ref_name }} 
-      CSONAR_HUB_URL: "https://duck.dyndns.org:7340" 
+      CSONAR_HUB_URL: "https://partnerdemo.codesonar.com" 
       CSONAR_HUB_USER: "${{ secrets.CSONAR_HUB_USER }}"
       CSONAR_HUB_PASSWORD: "${{ secrets.CSONAR_HUB_PASS }}"
       CSONAR_CSHOME: /opt/codesonar
@@ -50,6 +50,8 @@ jobs:
           path: scripts
       - name: Build and Analyze
         run: python3 scripts/build_and_analyze.py conf/codesonar-release.conf make -j $PARALLEL
+      - name: Temp fix for CSO4240
+        run: sed "s|\"partnerdemo|\"https://partnerdemo|g" warnings.sarif | sed "s|(partnerdemo|(https://partnerdemo|g" > t && mv t warnings.sarif
       - name: Upload SARIF to GitHub #Use this if you do not have GitHub Enterprise
         if: ${{ github.event.pull_request }}
         uses: actions/upload-artifact@v4

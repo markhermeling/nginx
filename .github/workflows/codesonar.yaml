@@ -35,7 +35,7 @@ jobs:
       IS_PR: ${{ github.event_name }}
     steps:
       - name: Set parallelism
-        run:  ls -laR ; echo "PARALLEL=`nproc`" >> $GITHUB_ENV
+        run:  id; ls -laR ; echo "PARALLEL=`nproc`" >> $GITHUB_ENV
       - name: Checkout 
         uses: actions/checkout@v4
       - name: Safe directory
